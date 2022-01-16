@@ -1,6 +1,5 @@
 #include "VescUart.h"
 #include <HardwareSerial.h>
-#include <bitset>
 
 VescUart::VescUart(void){
 	nunchuck.valueX         = 127;
@@ -185,7 +184,8 @@ bool VescUart::processReadPacket(uint8_t * message) {
 	switch (packetId){
 		case COMM_GET_VALUES: // Structure defined here: https://github.com/vedderb/bldc/blob/43c3bbaf91f5052a35b75c2ff17b5fe99fad94d1/commands.c#L164
 
-			ind = 4; // Skip the first 4 bytes 
+			data.tempFET            = buffer_get_float16(message, 10.0, &ind);
+			data.tempMotor          = buffer_get_float16(message, 10.0, &ind);
 			data.avgMotorCurrent 	= buffer_get_float32(message, 100.0, &ind);
 			data.avgInputCurrent 	= buffer_get_float32(message, 100.0, &ind);
 			ind += 8; // Skip the next 8 bytes
@@ -227,25 +227,6 @@ bool VescUart::getVescValues(void) {
 	}
 }
 
-bool VescUart::scanCAN(void) {
-
-	uint8_t payload[256];
-	uint8_t command[1] = { COMM_FW_VERSION };
-	packSendPayload(command, 1);
-	int lenPayload = receiveUartMessage(payload);
-	String s(reinterpret_cast<char*>(payload));
-	debugPort->println(s);
-	debugPort->println("Binary hex");
-	for(int i = 0;i < lenPayload;i++){
-		std::bitset<8> b(payload[i]);
-		debugPort->print((String)b.to_string().c_str());
-		debugPort->print("  ");
-		debugPort->println(payload[i]);
-	}
-
-	return false;
-}
-
 void VescUart::setNunchuckValues() {
 	int32_t ind = 0;
 	uint8_t payload[11];
@@ -273,84 +254,44 @@ void VescUart::setNunchuckValues() {
 	packSendPayload(payload, 11);
 }
 
-void VescUart::setCurrent(float current, int controllerId) {
+void VescUart::setCurrent(float current) {
 	int32_t index = 0;
-	uint8_t payLen = 5;
+	uint8_t payload[5];
 
-	if(controllerId != -1) {
-		payLen = 7;
-	}
-
-	uint8_t payload[payLen];
-
-	if(controllerId != -1) {
-		payload[index++] = COMM_FORWARD_CAN ;
-		payload[index++] = controllerId ;
-	}
 	payload[index++] = COMM_SET_CURRENT;
 	buffer_append_int32(payload, (int32_t)(current * 1000), &index);
 
-	packSendPayload(payload, payLen);
+	packSendPayload(payload, 5);
 }
 
-void VescUart::setBrakeCurrent(float brakeCurrent, int controllerId) {
+void VescUart::setBrakeCurrent(float brakeCurrent) {
 	int32_t index = 0;
-	uint8_t payLen = 5;
+	uint8_t payload[5];
 
-	if(controllerId != -1) {
-		payLen = 7;
-	}
-
-	uint8_t payload[payLen];
-
-	if(controllerId != -1) {
-		payload[index++] = COMM_FORWARD_CAN ;
-		payload[index++] = controllerId ;
-	}
 	payload[index++] = COMM_SET_CURRENT_BRAKE;
 	buffer_append_int32(payload, (int32_t)(brakeCurrent * 1000), &index);
 
-	packSendPayload(payload, payLen);
+	packSendPayload(payload, 5);
 }
 
-void VescUart::setRPM(float rpm, int controllerId) {
+void VescUart::setRPM(float rpm) {
 	int32_t index = 0;
-	uint8_t payLen = 5;
+	uint8_t payload[5];
 
-	if(controllerId != -1) {
-		payLen = 7;
-	}
-
-	uint8_t payload[payLen];
-
-	if(controllerId != -1) {
-		payload[index++] = COMM_FORWARD_CAN ;
-		payload[index++] = controllerId ;
-	}
 	payload[index++] = COMM_SET_RPM ;
 	buffer_append_int32(payload, (int32_t)(rpm), &index);
 
-	packSendPayload(payload, payLen);
+	packSendPayload(payload, 5);
 }
 
-void VescUart::setDuty(float duty, int controllerId) {
+void VescUart::setDuty(float duty) {
 	int32_t index = 0;
-	uint8_t payLen = 5;
+	uint8_t payload[5];
 
-	if(controllerId != -1) {
-		payLen = 7;
-	}
-
-	uint8_t payload[payLen];
-
-	if(controllerId != -1) {
-		payload[index++] = COMM_FORWARD_CAN ;
-		payload[index++] = controllerId ;
-	}
 	payload[index++] = COMM_SET_DUTY;
 	buffer_append_int32(payload, (int32_t)(duty * 100000), &index);
 
-	packSendPayload(payload, payLen);
+	packSendPayload(payload, 5);
 }
 
 void VescUart::serialPrint(uint8_t * data, int len) {

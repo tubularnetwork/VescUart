@@ -10,6 +10,8 @@ class VescUart
 {
 	/** Struct to store the telemetry data returned by the VESC */
 	struct dataPackage {
+		float tempFET;
+		float tempMotor;
 		float avgMotorCurrent;
 		float avgInputCurrent;
 		float dutyCycleNow;
@@ -62,11 +64,6 @@ class VescUart
 		bool getVescValues(void);
 
 		/**
-		 * @brief      Find any CAN connected controllers
-		 */
-		bool scanCAN(void);
-
-		/**
 		 * @brief      Sends values for joystick and buttons to the nunchuck app
 		 */
 		void setNunchuckValues(void);
@@ -74,30 +71,26 @@ class VescUart
 		/**
 		 * @brief      Set the current to drive the motor
 		 * @param      current  - The current to apply
-		 * @param      controllerId  - If specified the command will be sent over CAN to the specified controller ID
 		 */
-		void setCurrent(float current, int controllerId=-1);
+		void setCurrent(float current);
 
 		/**
 		 * @brief      Set the current to brake the motor
 		 * @param      brakeCurrent  - The current to apply
-		 * @param      controllerId  - If specified the command will be sent over CAN to the specified controller ID
 		 */
-		void setBrakeCurrent(float brakeCurrent, int controllerId=-1);
+		void setBrakeCurrent(float brakeCurrent);
 
 		/**
 		 * @brief      Set the rpm of the motor
 		 * @param      rpm  - The desired RPM (actually eRPM = RPM * poles)
-		 * @param      controllerId  - If specified the command will be sent over CAN to the specified controller ID
 		 */
-		void setRPM(float rpm, int controllerId=-1);
+		void setRPM(float rpm);
 
 		/**
 		 * @brief      Set the duty of the motor
 		 * @param      duty  - The desired duty (0.0-1.0)
-		 * @param      controllerId  - If specified the command will be sent over CAN to the specified controller ID
 		 */
-		void setDuty(float duty, int controllerId=-1);
+		void setDuty(float duty);
 
 		/**
 		 * @brief      Help Function to print struct dataPackage over Serial for Debug
