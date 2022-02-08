@@ -246,6 +246,35 @@ bool VescUart::scanCAN(void) {
 	return false;
 }
 
+void VescUart::focOpenloop(float current, int eRPM, int controllerId=-1)
+{
+	char cmd[64];
+	int cmdLen = snprintf(cmd, sizeof(cmd), "foc_openloop %f %d", current, eRPM);
+
+	int32_t index = 0;
+	uint8_t payLen = cmdLen + 1;
+
+	if(controllerId != -1) {
+		payLen += 2;
+	}
+
+	uint8_t payload[payLen];
+
+	if(controllerId != -1) {
+		payload[index++] = COMM_FORWARD_CAN ;
+		payload[index++] = controllerId ;
+	}
+	payload[index++] = COMM_TERMINAL_CMD;
+
+	for (int i = 0; i < cmdLen; i++)
+	{
+		payload[index++] = cmd[i];
+	}
+
+	packSendPayload(payload, payLen);
+
+}
+
 void VescUart::setNunchuckValues() {
 	int32_t ind = 0;
 	uint8_t payload[11];

@@ -67,6 +67,14 @@ class VescUart
 		bool scanCAN(void);
 
 		/**
+		 * @brief      Set motor to run in FOC Openloop mode. This will only run for about 5 sec and is hard on the motors
+		 * @param	   current - The current to run at. Low current and low RPM will cause vibration/cogging
+		 * @param	   eRPM - The eRPM (RPM * Pole-pair count) to run the motor at
+		 * @param      controllerId  - If specified the command will be sent over CAN to the specified controller ID
+		 */
+		void focOpenloop(float current, int eRPM, int controllerId=-1);
+
+		/**
 		 * @brief      Sends values for joystick and buttons to the nunchuck app
 		 */
 		void setNunchuckValues(void);
