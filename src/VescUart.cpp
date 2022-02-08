@@ -246,7 +246,7 @@ bool VescUart::scanCAN(void) {
 	return false;
 }
 
-void VescUart::focOpenloop(float current, int eRPM, int controllerId=-1)
+void VescUart::focOpenloop(float current, int eRPM, int controllerId)
 {
 	char cmd[64];
 	int cmdLen = snprintf(cmd, sizeof(cmd), "foc_openloop %f %d", current, eRPM);
