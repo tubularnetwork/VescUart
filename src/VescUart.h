@@ -75,6 +75,12 @@ class VescUart
 		void focOpenloop(float current, int eRPM, int controllerId=-1);
 
 		/**
+		 * @brief      Stop motor
+		 * @param      controllerId  - If specified the command will be sent over CAN to the specified controller ID
+		 */
+		void stopCmd(int controllerId=-1);
+
+		/**
 		 * @brief      Sends values for joystick and buttons to the nunchuck app
 		 */
 		void setNunchuckValues(void);
