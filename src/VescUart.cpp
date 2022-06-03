@@ -228,10 +228,11 @@ bool VescUart::getVescValues(int controllerId) {
 	packSendPayload(payload, payLen);
 	// delay(1); //needed, otherwise data is not read
 
-	int lenPayload = receiveUartMessage(payload);
+	uint8_t retPayload[256];
+	int lenPayload = receiveUartMessage(retPayload);
 
 	if (lenPayload > 55) {
-		bool read = processReadPacket(payload); //returns true if sucessful
+		bool read = processReadPacket(retPayload); //returns true if sucessful
 		return read;
 	}
 	else
