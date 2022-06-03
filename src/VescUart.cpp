@@ -207,12 +207,25 @@ bool VescUart::processReadPacket(uint8_t * message) {
 	}
 }
 
-bool VescUart::getVescValues(void) {
+bool VescUart::getVescValues(int controllerId) {
 
-	uint8_t command[1] = { COMM_GET_VALUES };
-	uint8_t payload[256];
+	int32_t index = 0;
+	uint8_t payLen = 1;
 
-	packSendPayload(command, 1);
+	if(controllerId != -1) {
+		payLen = 3;
+	}
+
+	uint8_t payload[payLen];
+
+	if(controllerId != -1) {
+		payload[index++] = COMM_FORWARD_CAN ;
+		payload[index++] = controllerId ;
+	}
+
+	payload[index++] = COMM_GET_VALUES;
+
+	packSendPayload(payload, payLen);
 	// delay(1); //needed, otherwise data is not read
 
 	int lenPayload = receiveUartMessage(payload);

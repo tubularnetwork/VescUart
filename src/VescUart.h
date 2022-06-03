@@ -55,11 +55,12 @@ class VescUart
 		void setDebugPort(Stream* port);
 
 		/**
-		 * @brief      Sends a command to VESC and stores the returned data
+		 * @brief      Sends a command to VESC and stores the returned data, data is replaced each call even if for different controllers
+		 * @param      controllerId  - If specified the command will be sent over CAN to the specified controller ID
 		 *
 		 * @return     True if successfull otherwise false
 		 */
-		bool getVescValues(void);
+		bool getVescValues(int controllerId=-1);
 
 		/**
 		 * @brief      Find any CAN connected controllers
